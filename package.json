@@ -1,6 +1,6 @@
 {
   "name": "editorjs-syntax-hljs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Syntax highlighting for EditorJS using hljs",
   "main": "src/index.js",
   "scripts": {

@@ -28,6 +28,8 @@ var Syntax = /** @class */ (function () {
             this.lineNumber = config === null || config === void 0 ? void 0 : config.lineNumber;
         if (config.lineOffset)
             this.lineOffset = config === null || config === void 0 ? void 0 : config.lineOffset;
+        if (data.lineOffset)
+            this.lineOffset = data === null || data === void 0 ? void 0 : data.lineOffset;
         if (data && data.language) {
             this.language = data.language;
         }
@@ -42,19 +44,19 @@ var Syntax = /** @class */ (function () {
         }
     }
     Object.defineProperty(Syntax, "enableLineBreaks", {
+        // If line breaks (enter pressed) then enter new line if 3 consecutive line found then exit CodeBlock
         get: function () {
-            const preview = currentCodeBlock.preview
-            const inp = currentCodeBlock.inp
-            const lineNum = currentCodeBlock.lineNum
-            const lineNumber = currentCodeBlock.lineNumber
-            const lineOffset = currentCodeBlock.lineOffset
-
-        if (inp.value.substring(inp.value.length-3) == '\n\n\n'){
-            inp.value = inp.value.substring(0, inp.value.length-3)
-            const code = highlight_js_1.highlight(inp.value+'\n', {language: currentCodeBlock.language})
-            preview.innerHTML = code.value
-            lineNum.innerText = lineNumber=='checked' ? inp.value.split('\n').map((_val,i)=>i+lineOffset).join('\n'):''
-            return false
+            var preview = currentCodeBlock.preview;
+            var inp = currentCodeBlock.inp;
+            var lineNum = currentCodeBlock.lineNum;
+            var lineNumber = currentCodeBlock.lineNumber;
+            var lineOffset = currentCodeBlock.lineOffset;
+            if (inp.value.substring(inp.value.length - 3) == '\n\n\n') {
+                inp.value = inp.value.substring(0, inp.value.length - 3);
+                var code = highlight_js_1.default.highlight(inp.value + '\n', { language: currentCodeBlock.language });
+                preview.innerHTML = code.value;
+                lineNum.innerText = lineNumber == 'checked' ? inp.value.split('\n').map(function (_val, i) { return i + lineOffset; }).join('\n') : '';
+                return false;
             }
             else {
                 return true;
@@ -94,6 +96,7 @@ var Syntax = /** @class */ (function () {
         op.innerText = 'Plain';
         op.value = 'plaintext';
         select.appendChild(op);
+        // if langugages aren't given set 2 default (html and python)
         if (this.languages === undefined) {
             var op_1 = document.createElement('option');
             var op1 = document.createElement('option');
@@ -104,6 +107,7 @@ var Syntax = /** @class */ (function () {
             op_1.value = 'html';
             op1.value = 'python';
         }
+        // If languages are given then create the UI option for each
         (_a = this.languages) === null || _a === void 0 ? void 0 : _a.forEach(function (lang) {
             var opt = document.createElement('option');
             opt.value = lang.key;
@@ -169,32 +173,38 @@ var Syntax = /** @class */ (function () {
             });
         }
         supportTabIndentation(this.inp);
+        // Update the preview Box  from input textarea
         var updateHighlight = function () {
             var code = highlight_js_1.default.highlight(_this.inp.value + '\n', { language: _this.language });
             _this.preview.innerHTML = code.value;
             _this.inp.style.height = (_this.preview.getBoundingClientRect().height) + 'px';
             _this.inp.style.width = (_this.preview.getBoundingClientRect().width) + 'px';
         };
+        // Delay to change the size of input textarea on initial load of code(without delay won't work)
         setTimeout(function () {
             _this.inp.style.height = (_this.preview.getBoundingClientRect().height) + 'px';
             _this.inp.style.width = (_this.preview.getBoundingClientRect().width) + 'px';
         }, 10);
+        // On code change
         this.inp.addEventListener('input', function () {
             _this.inp.classList.toggle('syntax-inputBox-empty', _this.inp.value === '');
             _this.lineNum.innerText = _this.lineNumber == 'checked' ? _this.inp.value.split('\n').map(function (_val, i) { return i + _this.lineOffset; }).join('\n') : '';
             updateHighlight();
         });
+        // on input textarea scroll, scroll preview box and lineNumber element as well
         this.inp.onscroll = function (e) {
             var _a;
             console.log(e.currentTarget.scrollLeft);
             _this.preview.scroll(_this.inp.scrollLeft, _this.inp.scrollTop);
             (_a = _this.lineNum) === null || _a === void 0 ? void 0 : _a.scroll(_this.inp.scrollLeft, _this.inp.scrollTop);
         };
+        // On language select
         select.onchange = function () {
             console.log(select.value);
             _this.language = select.value;
             updateHighlight();
         };
+        // Copy the code to clipboard and change to check for 1 second
         copy.onclick = function () {
             navigator.clipboard.writeText(_this.inp.value);
             copy.innerHTML = clipboardCheck_svg;
@@ -202,7 +212,6 @@ var Syntax = /** @class */ (function () {
                 copy.innerHTML = clipboard_svg;
             }, 1000);
         };
-        //  
         // Load the data back
         // @ts-ignore
         this.inp.textContent = this.data.code;
@@ -212,14 +221,22 @@ var Syntax = /** @class */ (function () {
         this.lineNum.innerText = this.lineNumber == 'checked' ? this.inp.value.split('\n').map(function (_val, i) { return i + _this.lineOffset; }).join('\n') : '';
         // Update the code block with highlighted html
         updateHighlight();
-        // 
-        this.preview.classList.add('hljs', 'syntax-previewBox');
+        // Ignore this feature, Was added cuz of some problem I had, solved the problem,
+        // but still kept the separate box feature
         if ((_b = this.config) === null || _b === void 0 ? void 0 : _b.separateBox)
             this.inp.classList.add('syntax-separateBox');
-        container.classList.add('syntax-code-block');
+        // CSS Classes setup, hljs added to get the base color of the theme
+        this.preview.classList.add('hljs', 'syntax-previewBox');
         this.inp.classList.add('syntax-inputBox');
+        this.lineNum.classList.add('syntax-line-number');
+        this.preview.classList.add('hljs');
+        this.preview.style.overflow = 'hidden';
+        container.classList.add('syntax-code-block');
         copy.classList.add('syntax-copy-btn');
         select.classList.add('syntax-lang-select');
+        select.classList.add('hljs');
+        copy.classList.add('hljs');
+        // important CSS, without which the illusion would probably break
         var padTop = '3rem';
         var padLeft = '2.25rem';
         this.preview.style.paddingTop = padLeft;
@@ -228,7 +245,7 @@ var Syntax = /** @class */ (function () {
         this.preview.style.paddingLeft = padTop;
         this.inp.style.paddingLeft = padTop;
         this.inp.placeholder = 'Code Here...';
-        this.lineNum.classList.add('syntax-line-number');
+        // Element settings?
         this.preview.spellcheck = false;
         this.inp.spellcheck = false;
         this.inp.wrap = 'off';
@@ -237,50 +254,46 @@ var Syntax = /** @class */ (function () {
         container.appendChild(copy);
         container.appendChild(this.inp);
         container.appendChild(this.lineNum);
-        select.classList.add('hljs');
-        copy.classList.add('hljs');
-        this.preview.classList.add('hljs');
-        this.preview.style.overflow = 'hidden';
         return container;
     };
     Syntax.prototype.toogleLineNumber = function () {
         var _this = this;
-        // const this.lineNum!:HTMLSpanElement|null = document.querySelector<HTMLSpanElement>('.syntax-line-number')
-        // const inp:HTMLTextAreaElement|null = document.querySelector<HTMLTextAreaElement>('.syntax-this.inp!utBox')
         this.lineNumber = this.lineNumber == 'checked' ? '' : 'checked';
         this.lineNum.style.display = this.lineNumber == 'checked' ? 'block' : 'none';
         this.lineNum.innerText = this.lineNumber == 'checked' ? this.inp.value.split('\n').map(function (_val, i) { return i + _this.lineOffset; }).join('\n') : '';
     };
+    Syntax.prototype.onOffsetLine = function (val) {
+        var _this = this;
+        this.lineOffset = val;
+        this.lineNum.innerText = this.lineNumber == 'checked' ? this.inp.value.split('\n').map(function (_val, i) { return i + _this.lineOffset; }).join('\n') : '';
+    };
     Syntax.prototype.renderSettings = function () {
         var _this = this;
-        return {
-            onActivate: function () { return _this.toogleLineNumber(); },
-            icon: "{1}",
-            label: "<input type='checkbox' ".concat(this.lineNumber, " >Line Number"),
-            closeOnActivate: !0,
-            // isActive: false
-        };
+        var lineOffsetElem = document.createElement('input');
+        lineOffsetElem.type = 'number';
+        lineOffsetElem.placeholder = 'Line Offset Number';
+        lineOffsetElem.oninput = function () { _this.onOffsetLine(parseInt(lineOffsetElem.value)); };
+        return [{
+                onActivate: function () { return _this.toogleLineNumber(); },
+                icon: "1.",
+                label: "<input type='checkbox' ".concat(this.lineNumber, " >Line Number"),
+                closeOnActivate: !0,
+            },
+            lineOffsetElem];
     };
     Syntax.prototype.save = function (block) {
         var codeBlock = block.querySelector('code');
         return {
             'code': codeBlock === null || codeBlock === void 0 ? void 0 : codeBlock.textContent,
-            'language': this.language
+            'language': this.language,
+            'lineOffset': this.lineOffset
         };
     };
     return Syntax;
 }());
 export default Syntax;
+// Set the color of the cursor (caret) according to hljs theme loaded
 setTimeout(function () {
     var color = window.getComputedStyle(document.querySelector('.hljs')).color;
-    // const inps: any = document.querySelectorAll('.syntax-inputBox')
-    // // console.log(elements)
-    // // console.log("Color: ", window.getComputedStyle(elements).getPropertyValue('color'))
-    // // return
-    // inps.forEach((inp:HTMLAreaElement, i:number)=>{
-    //     window.getComputedStyle(inp).color = color
-    //     // inp.style.webkitTextFillColor = color
-    // })
-    // // inps[0].style.webkitTextFillColor = pres[0].style.webkitTextFillColor
     document.body.style.setProperty('--hljs-base-color', color);
 }, 350);

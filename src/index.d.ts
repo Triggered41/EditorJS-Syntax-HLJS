@@ -3,6 +3,7 @@ import './SyntaxBlock.css';
 interface Idata {
     code?: string;
     language?: string;
+    lineOffset?: number;
 }
 interface Iconfig {
     defaultLanguage?: string;
@@ -40,16 +41,18 @@ export default class Syntax {
     lineNum: HTMLSpanElement | null;
     render(): HTMLPreElement;
     toogleLineNumber(): void;
-    renderSettings(): {
+    onOffsetLine(val: number): void;
+    renderSettings(): (HTMLInputElement | {
         onActivate: () => void;
         icon: string;
         label: string;
         closeOnActivate: boolean;
-    };
+    })[];
     setLanguage: (lang: string) => void;
     save(block: HTMLPreElement): {
         code: string;
         language: any;
+        lineOffset: number;
     };
 }
 export {};

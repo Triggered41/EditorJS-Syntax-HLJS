@@ -9,7 +9,8 @@ const clipboardCheck_svg = `<svg stroke="currentColor" fill="currentColor" strok
 
 interface Idata{
     code?: string
-    language?: string
+    language?: string,
+    lineOffset?: number
 }
 
 interface Iconfig{
@@ -31,8 +32,8 @@ export default class Syntax{
     lineNumber = ''
     lineOffset = 1
 
+    // If line breaks (enter pressed) then enter new line if 3 consecutive line found then exit CodeBlock
     static get enableLineBreaks() {
-        console.log("Line Broke")
         const preview = currentCodeBlock.preview
         const inp = currentCodeBlock.inp
         const lineNum = currentCodeBlock.lineNum
@@ -59,6 +60,7 @@ export default class Syntax{
 
         if (config!.lineNumber!) this.lineNumber = config?.lineNumber!
         if (config!.lineOffset) this.lineOffset = config?.lineOffset!
+        if (data!.lineOffset) this.lineOffset = data?.lineOffset!
         
         
         if (data && data.language){
@@ -104,6 +106,7 @@ export default class Syntax{
         op.value = 'plaintext'
         select.appendChild(op)
 
+        // if langugages aren't given set 2 default (html and python)
         if (this.languages === undefined){
             const op = document.createElement('option')
             const op1 = document.createElement('option')
@@ -115,6 +118,7 @@ export default class Syntax{
             op1.value = 'python'
         }
 
+        // If languages are given then create the UI option for each
         this.languages?.forEach((lang:any)=>{
             const opt = document.createElement('option')
             opt.value = lang.key
@@ -181,7 +185,9 @@ export default class Syntax{
           })
       }
         
-      supportTabIndentation(this.inp)
+        supportTabIndentation(this.inp)
+
+        // Update the preview Box  from input textarea
         const updateHighlight = ()=>{
             const code = hljs.highlight(this.inp!.value+'\n', {language: this.language})
             this.preview!.innerHTML = code.value
@@ -189,27 +195,32 @@ export default class Syntax{
             this.inp!.style.width = (this.preview!.getBoundingClientRect().width)+'px'
         }
 
+        // Delay to change the size of input textarea on initial load of code(without delay won't work)
         setTimeout(() => {
             this.inp!.style.height = (this.preview!.getBoundingClientRect().height)+'px'
             this.inp!.style.width = (this.preview!.getBoundingClientRect().width)+'px'
         }, 10);
         
-
+        // On code change
         this.inp!.addEventListener('input', () => {
             this.inp!.classList.toggle('syntax-inputBox-empty', this.inp!.value === '')
             this.lineNum!.innerText = this.lineNumber=='checked' ? this.inp!.value.split('\n').map((_val,i)=>i+this.lineOffset!).join('\n'):''
             updateHighlight()
         })
+        // on input textarea scroll, scroll preview box and lineNumber element as well
         this.inp!.onscroll = (e:any) => {
             console.log(e.currentTarget.scrollLeft)
             this.preview!.scroll(this.inp!.scrollLeft, this.inp!.scrollTop)
             this.lineNum?.scroll(this.inp!.scrollLeft, this.inp!.scrollTop)
         }
+        // On language select
         select.onchange = () => {
             console.log(select.value)
             this.language = select.value
             updateHighlight()
         }
+
+        // Copy the code to clipboard and change to check for 1 second
         copy.onclick = () => {
             navigator.clipboard.writeText(this.inp!.value)
             copy.innerHTML = clipboardCheck_svg
@@ -218,9 +229,6 @@ export default class Syntax{
             }, 1000);
         }
 
-        
-        //  
-        
         // Load the data back
         // @ts-ignore
         this.inp!.textContent = this.data!.code
@@ -229,20 +237,25 @@ export default class Syntax{
         // Update line numbering if enabled
         this.lineNum!.innerText = this.lineNumber=='checked'? this.inp!.value.split('\n').map((_val,i)=>i+this.lineOffset!).join('\n'):''
         // Update the code block with highlighted html
-        updateHighlight()
-        // 
-        
-        
+        updateHighlight()        
 
-        this.preview!.classList.add('hljs', 'syntax-previewBox')
+        // Ignore this feature, Was added cuz of some problem I had, solved the problem,
+        // but still kept the separate box feature
         if (this.config?.separateBox) this.inp!.classList.add('syntax-separateBox')
         
-
-        container.classList.add('syntax-code-block')
+        // CSS Classes setup, hljs added to get the base color of the theme
+        this.preview!.classList.add('hljs', 'syntax-previewBox')
         this.inp!.classList.add('syntax-inputBox')
+        this.lineNum!.classList.add('syntax-line-number')
+        this.preview.classList.add('hljs')
+        this.preview.style.overflow = 'hidden'
+        container.classList.add('syntax-code-block')
         copy.classList.add('syntax-copy-btn')
         select.classList.add('syntax-lang-select')
+        select.classList.add('hljs')
+        copy.classList.add('hljs')
 
+        // important CSS, without which the illusion would probably break
         const padTop = '3rem'
         const padLeft = '2.25rem'
         this.preview!.style.paddingTop = padLeft
@@ -252,8 +265,7 @@ export default class Syntax{
         this.inp!.style.paddingLeft = padTop
         this.inp!.placeholder = 'Code Here...'
 
-        this.lineNum!.classList.add('syntax-line-number')
-        
+        // Element settings?
         this.preview!.spellcheck = false
         this.inp!.spellcheck = false
         this.inp!.wrap = 'off'
@@ -264,30 +276,32 @@ export default class Syntax{
         container.appendChild(this.inp!)
         container.appendChild(this.lineNum!)
 
-        select.classList.add('hljs')
-        copy.classList.add('hljs')
-        this.preview.classList.add('hljs')
-        this.preview.style.overflow = 'hidden'
-
         return container
     }
 
     toogleLineNumber(){
-        // const this.lineNum!:HTMLSpanElement|null = document.querySelector<HTMLSpanElement>('.syntax-line-number')
-        // const inp:HTMLTextAreaElement|null = document.querySelector<HTMLTextAreaElement>('.syntax-this.inp!utBox')
         this.lineNumber= this.lineNumber=='checked'?'':'checked'
         this.lineNum!.style.display = this.lineNumber=='checked' ? 'block' : 'none'
         this.lineNum!.innerText = this.lineNumber=='checked' ? this.inp!.value.split('\n').map((_val,i)=>i+this.lineOffset!).join('\n'):''
     }
 
+    onOffsetLine(val: number){
+        this.lineOffset = val
+        this.lineNum!.innerText = this.lineNumber=='checked' ? this.inp!.value.split('\n').map((_val,i)=>i+this.lineOffset!).join('\n'):''
+    }
     renderSettings() {
-        return {
+        const lineOffsetElem = document.createElement('input')
+        lineOffsetElem.type = 'number'
+        lineOffsetElem.placeholder='Line Offset Number'
+        lineOffsetElem.oninput = ()=>{this.onOffsetLine(parseInt(lineOffsetElem.value))}
+        return [{
             onActivate: ()=>this.toogleLineNumber(),
-            icon: `{1}`,
+            icon: `1.`,
             label: `<input type='checkbox' ${this.lineNumber} >Line Number`,
             closeOnActivate: !0,
-            // isActive: false
-        }
+        }, 
+        lineOffsetElem
+            ]
     }
 
     setLanguage = (lang:string) => {
@@ -298,22 +312,16 @@ export default class Syntax{
         const codeBlock = block.querySelector('code')
         return {
             'code': codeBlock?.textContent,
-            'language': this.language
+            'language': this.language,
+            'lineOffset': this.lineOffset
         }
     }
 }
 
+
+// Set the color of the cursor (caret) according to hljs theme loaded
 setTimeout(() => {
     const color: any = window.getComputedStyle(document.querySelector('.hljs')!).color
-    // const inps: any = document.querySelectorAll('.syntax-inputBox')
-    // // console.log(elements)
-    // // console.log("Color: ", window.getComputedStyle(elements).getPropertyValue('color'))
-    // // return
-    // inps.forEach((inp:HTMLAreaElement, i:number)=>{
-    //     window.getComputedStyle(inp).color = color
-    //     // inp.style.webkitTextFillColor = color
-    // })
-    // // inps[0].style.webkitTextFillColor = pres[0].style.webkitTextFillColor
     document.body.style.setProperty('--hljs-base-color', color)
 
 }, 350);
