@@ -1,0 +1,20 @@
+{
+  "name": "editorjs-syntax-hljs",
+  "version": "1.0.0",
+  "description": "Syntax highlighting for EditorJS using hljs",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Triggered41/EditorJS-Syntax-HLJS.git"
+  },
+  "keywords": ["syntax", "highlight", "editorjs", "hljs", "highlight.js"],
+  "author": "Vehdat",
+  "license": "MIT",
+  "type": "module",
+  "peerDependencies": {
+    "highlight.js": "^11.9.0"
+  }
+}
