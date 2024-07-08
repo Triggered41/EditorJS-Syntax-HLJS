@@ -1,5 +1,6 @@
 # EditorJS-Syntax-HLJS
 Syntax highlighting for EditorJS using HLJS (highlight.js)
+[live_preview](https://triggered41.github.io/EditorJS-Syntax-HLJS/)
 
 **Note: Requires Highlight.js**
 
