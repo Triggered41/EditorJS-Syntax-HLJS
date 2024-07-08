@@ -10,11 +10,17 @@
     "type": "git",
     "url": "https://github.com/Triggered41/EditorJS-Syntax-HLJS.git"
   },
-  "keywords": ["syntax", "highlight", "editorjs", "hljs", "highlight.js"],
+  "keywords": [
+    "syntax",
+    "highlight",
+    "editorjs",
+    "hljs",
+    "highlight.js"
+  ],
   "author": "Vehdat",
   "license": "MIT",
   "type": "module",
   "peerDependencies": {
-    "highlight.js": "^11.9.0"
+    "highlight.js": "^11.10.0"
   }
 }

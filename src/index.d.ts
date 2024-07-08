@@ -20,10 +20,13 @@ export default class Syntax {
     separateBox: any;
     lineNumber: string;
     lineOffset: number;
+    readOnly: boolean;
+    static get isReadOnlySupported(): boolean;
     static get enableLineBreaks(): boolean;
-    constructor({ data, config }: {
+    constructor({ data, config, readOnly }: {
         data?: Idata;
         config?: Iconfig;
+        readOnly: boolean;
     });
     /**
    * Get Tool toolbox settings

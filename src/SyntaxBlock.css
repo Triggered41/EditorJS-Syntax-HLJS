@@ -110,6 +110,7 @@ body{
 
 
 .syntax-lang-select{
+    pointer-events: none;
     font-weight: bold;
     padding: 0.25rem;
     position: absolute;
@@ -123,6 +124,13 @@ body{
     border-radius: .25rem;
     outline: none;
     border: none;
+    opacity: 0;
+    transition: 250ms;
+}
+
+.syntax-lang-select-reveal{
+    pointer-events: all;
+    opacity: 1;
 }
 
 .syntax-copy-btn:active{

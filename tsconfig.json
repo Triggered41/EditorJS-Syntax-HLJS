@@ -7,15 +7,19 @@
       "allowJs": true,
       // Generate d.ts files
       "declaration": true,
+      "target": "ESNext",
+      "module": "ESNext",
+      "esModuleInterop": true,
+      "skipLibCheck": true,
       // This compiler run should
       // only output d.ts files
-      "emitDeclarationOnly": true,
+      // "emitDeclarationOnly": true,
       // Types should go into this directory.
       // Removing this would place the .d.ts files
       // next to the .js files
       // "outDir": "dist",
       // go to js file when using IDE functions like
       // "Go to Definition" in VSCode
-      "declarationMap": true
+      // "declarationMap": true
     }
   }

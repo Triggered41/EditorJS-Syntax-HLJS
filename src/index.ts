@@ -31,7 +31,11 @@ export default class Syntax{
     separateBox
     lineNumber = ''
     lineOffset = 1
+    readOnly = false
 
+    static get isReadOnlySupported(){
+        return true;
+    }
     // If line breaks (enter pressed) then enter new line if 3 consecutive line found then exit CodeBlock
     static get enableLineBreaks() {
         const preview = currentCodeBlock.preview
@@ -52,7 +56,7 @@ export default class Syntax{
       }
     
 
-    constructor ({data, config}: {data?: Idata, config?: Iconfig}){
+    constructor ({data, config, readOnly}: {data?: Idata, config?: Iconfig, readOnly: boolean}){
         currentCodeBlock = this
         this.data = data
         this.config = config
@@ -61,6 +65,8 @@ export default class Syntax{
         if (config!.lineNumber!) this.lineNumber = config?.lineNumber!
         if (config!.lineOffset) this.lineOffset = config?.lineOffset!
         if (data!.lineOffset) this.lineOffset = data?.lineOffset!
+        this.readOnly = readOnly
+
         
         
         if (data && data.language){
@@ -98,6 +104,12 @@ export default class Syntax{
         this.lineNum! = document.createElement('span')
         this.preview = document.createElement('code')
         this.inp = document.createElement('textarea')
+
+        if (this.readOnly){
+            container.contentEditable = 'false'
+            this.preview.contentEditable = 'false'
+            this.inp.readOnly = true
+        }
 
         copy.innerHTML = clipboard_svg
 
@@ -209,9 +221,10 @@ export default class Syntax{
         })
         // on input textarea scroll, scroll preview box and lineNumber element as well
         this.inp!.onscroll = (e:any) => {
-            console.log(e.currentTarget.scrollLeft)
             this.preview!.scroll(this.inp!.scrollLeft, this.inp!.scrollTop)
             this.lineNum?.scroll(this.inp!.scrollLeft, this.inp!.scrollTop)
+            console.log("Val: ", this.inp.scrollTop, ', ', this.inp.scrollTop < 15)
+            select.classList.toggle('syntax-lang-select-reveal', this.inp.scrollTop < 20)
         }
         // On language select
         select.onchange = () => {
@@ -253,6 +266,7 @@ export default class Syntax{
         copy.classList.add('syntax-copy-btn')
         select.classList.add('syntax-lang-select')
         select.classList.add('hljs')
+        select.classList.add('syntax-lang-select-reveal')
         copy.classList.add('hljs')
 
         // important CSS, without which the illusion would probably break

@@ -1,13 +1,12 @@
 # EditorJS-Syntax-HLJS
 Syntax highlighting for EditorJS using HLJS (highlight.js)
 
-*Requires Highlight.js*
+**Note: Requires Highlight.js**
 
 # Usage
 
 ```
-import hljs from 'highlight.js'
-import Syntax from 'editorjs-syntax-hljs
+import Syntax from 'editorjs-syntax-hljs'
 
 // import any custom style from highlight.js to use it, default is atom-one-dark
 import 'highlight.js/styles/atom-one-light.css' 
@@ -18,7 +17,7 @@ const editor = new EditorJS({
         class: Syntax,
         shortcut: 'CTRL+SHIFT+C',
         config: {
-            lineNumber: ''. // 'checked' | '' // Disable/Enable line number
+            lineNumber: '', // 'checked' | ''  Disable/Enable line number
             lineOffset: 1, //Default line number to start from
             defaultLanguage: 'plaintext', // Default language for Syntax Highlight etc.
             languages: {
