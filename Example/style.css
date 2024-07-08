@@ -1,0 +1,143 @@
+body{
+    --syntax-font-size: 1rem;
+    --syntax-line-height: 1rem
+    --hljs-base-color: #efefef
+}
+
+.syntax-code-block{
+    position: relative;
+    background-color: transparent;
+    /* overflow: hidden; */
+
+}
+
+.syntax-previewBox, .syntax-inputBox{
+    margin: 0;
+    /* padding: 0; */
+    /* padding: 5rem; */
+    top: 0;
+    line-height: var(--syntax-line-height);
+    
+    /* Don't Change this */
+    font-size: var(--syntax-font-size); 
+
+    letter-spacing: 0px;
+    border: none;
+    outline: none;
+    resize: none;
+    
+}
+
+.syntax-previewBox{
+    pointer-events: none;
+    border-radius: .5rem;
+    max-height: 15rem;
+    overflow: hidden;
+    /* min-height: 1rem; */   
+}
+
+.syntax-inputBox{
+    position: absolute;
+    box-sizing: border-box;
+    padding: var(--syntax-font-size);
+    -webkit-text-fill-color: transparent;
+    background-color: transparent;
+    color: var(--hljs-base-color);
+    /* overflow: hidden; */
+    /* max-height: 5rem; */
+}
+.syntax-inputBox::-webkit-scrollbar{
+    background-color: transparent;
+    width: 0.5rem;
+    height: 0.5rem;
+}
+.syntax-inputBox::-webkit-scrollbar-thumb{
+    /* cursor:n-resize; */
+    border-radius: 8px;
+    background-color: gray;
+}
+
+.syntax-inputBox::selection{
+    -webkit-text-fill-color: #222;
+}
+
+.syntax-inputBox-empty{
+    -webkit-text-fill-color: #FFF7;
+}
+
+.syntax-separateBox{
+    margin-top: 1rem;
+    border-radius: .5rem;
+    -webkit-text-fill-color: #EFEFEF;
+    background-color: #282c34;
+    position: relative;
+}
+
+.syntax-line-number{
+    position: absolute;
+    top: 0;
+    color: var(--hljs-base-color);
+    width: 1rem;
+    background-color: #8883;
+    font-size: var(--syntax-font-size);
+    line-height: var(--syntax-line-height);
+    font-size: 1rem;
+    padding: 1rem;
+    padding-left: .5rem;
+    padding-right: 0.75rem;
+    max-height: 15rem;
+    overflow: hidden;
+}
+
+.syntax-line-number::before{
+    text-orientation: upright;
+}
+
+.syntax-copy-btn{
+    padding: .5rem;
+    padding-inline: .65rem;
+    position: absolute;
+    top: 4px;
+    right: 2rem;
+    z-index: 5;
+    border-radius: .25rem;
+    border: none;
+
+    background-color: transparent;
+    /* color: #EFEFEF; */
+    /* outline: solid  2px ; */
+}
+
+
+.syntax-lang-select{
+    pointer-events: none;
+    font-weight: bold;
+    padding: 0.25rem;
+    position: absolute;
+    top: 4px;
+    left: 2.5rem;
+    z-index: 5;
+
+    background-color: transparent;
+    /* color: #EFEFEF; */
+
+    border-radius: .25rem;
+    outline: none;
+    border: none;
+    opacity: 0;
+    transition: 250ms;
+}
+
+.syntax-lang-select-reveal{
+    pointer-events: all;
+    opacity: 1;
+}
+
+.syntax-copy-btn:active{
+    scale: 0.95;
+}
+
+.syntax-lang-select:hover, .syntax-lang-select:focus, .syntax-copy-btn:hover{
+    /* background-color: #282c34; */
+    outline: solid 2px;
+}

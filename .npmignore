@@ -2,3 +2,4 @@ node_modules/
 Example/
 
 src/index.ts
+src/types.d.ts
